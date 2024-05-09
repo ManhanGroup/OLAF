@@ -2,13 +2,14 @@ model_name: "demonstration model"
 model_version: 0.1
 scenario_name: "test scenario"
 input_geos: "input_zones.shp"
-product_types:
+geo_id: "GEOID"
+land_uses:
   SFH:
     name: "single-family dwelling units"
     market: "housing"
-    # these field references can actually be any valid function passed to df.eval()
     inventory: "base_SFH"
     capacity: "SFH_cap"
+    # these field references can actually be any valid function passed to df.eval()
     value_fn: "SFH_val"
     growth: 0
     decline: 0
