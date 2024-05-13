@@ -19,5 +19,5 @@ land_uses:
     inventory: "exist_total_emp"
     store_fld: "final_total_emp"
     filter_fn: "dummy_biz_value > 0"
-    value_fn: "dummy_res_value"
+    value_fn: "dummy_biz_value"
     growth: 1000

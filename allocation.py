@@ -36,6 +36,9 @@ class model:
         id = self.config['geo_id']
         dev_queue = [] # enumerate a "queue" of development projects to build
         for LU in self.land_uses:
+            store_fld = self.land_uses[LU]["store_fld"]
+            inventory = self.land_uses[LU]["inventory"]
+            self.zone_df[store_fld] = self.zone_df[inventory] # initialize with the existing stock
             print("Enumerating " + self.land_uses[LU]['name'] + " to allocate")
             growth = int(self.land_uses[LU]["growth"])
             for draw in range(growth):
@@ -56,8 +59,6 @@ class model:
                     print(".", end="", flush=True)
             _last_part = part
             store_fld = self.land_uses[LU]["store_fld"]
-            inventory = self.land_uses[LU]["inventory"]
-            self.zone_df[store_fld] = self.zone_df[inventory] # initialize with the existing stock
             value_fn = self.land_uses[LU]["value_fn"]
             options = self.sample_alts(30,LU)
             utility = options.eval(value_fn,inplace=False).to_numpy()
