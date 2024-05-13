@@ -1,71 +1,23 @@
 model_name: "demonstration model"
 model_version: 0.1
 scenario_name: "test scenario"
-input_geos: "input_zones.shp"
-geo_id: "GEOID"
+zonal_data: "zones.csv" 
+geo_id: "taz"
+
 land_uses:
-  SFH:
-    name: "single-family dwelling units"
+  DU:
+    name: "dwelling units"
     market: "housing"
-    inventory: "base_SFH"
-    capacity: "SFH_cap"
-    # these field references can actually be any valid function passed to df.eval()
-    value_fn: "SFH_val"
-    growth: 0
-    decline: 0
-  MFH:
-    name: "multi-family dwelling units"
-    market: "housing"
-    inventory: "base_MFH"
-    capacity: "MFH_cap"
-    value_fn: "MFH_val"
-    growth: 0
-    decline: 0
-  OFF:
-    name: "office employment"
+    inventory: "total_residential_units"
+    store_fld: "final_residential_units"
+    filter_fn: "dummy_res_value > 0" # passed to DataFrame.query()
+    value_fn: "dummy_res_value" # passed to DataFrame.eval()
+    growth: 1000
+  EMP:
+    name: "jobs"
     market: "business"
-    inventory: "base_OFF"
-    capacity: "OFF_cap"
-    value_fn: "OFF_val"    
-    growth: 0
-    decline: 0
-  RET:
-    name: "retail employment"
-    market: "business"
-    inventory: "base_RET"
-    capacity: "RET_cap"
-    value_fn: "RET_val"    
-    growth: 0
-    decline: 0
-  IND:
-    name: "industrial employment"
-    market: "business"
-    inventory: "base_IND"
-    capacity: "IND_cap"
-    value_fn: "IND_val"
-    growth: 0
-    decline: 0
-  SVC:
-    name: "service employment"
-    market: "business"
-    inventory: "base_SVC"
-    capacity: "SVC_cap"
-    value_fn: "SVC_val"
-    growth: 0
-    decline: 0
-  EAF:
-    name: "entertainment and food service jobs"
-    market: "business"
-    inventory: "base_EAF"
-    capacity: "EAF_cap"
-    value_fn: "EAF_val"
-    growth: 0
-    decline: 0
-  ONR:
-    name: "other non-residential activity"
-    market: "business"
-    inventory: "base_ONR"
-    capacity: "ONR_cap"
-    value_fn: "ONR_val"
-    growth: 0
-    decline: 0
+    inventory: "exist_total_emp"
+    store_fld: "final_total_emp"
+    filter_fn: "dummy_biz_value > 0"
+    value_fn: "dummy_res_value"
+    growth: 1000
