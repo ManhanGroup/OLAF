@@ -1,0 +1,72 @@
+model_name: "demonstration model"
+model_version: 0.1
+scenario_name: "test scenario"
+zonal_data: "Shasta_parcel_base_2010.csv" 
+geo_id: "parcelid"
+draws: 30
+land_uses:
+  SFDU_growth:
+    name: "single-family dwelling units (growth)"
+    market: "housing"
+    store_fld: "SFDU_growth"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "(SFDU_growth + SFDU + SFDU_decline) == 0" # can only allocate to parcels that don't have anything
+    value_fn: "SFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
+    total: 2038
+  SFDU_decline:
+    name: "single-family dwelling units (decline)"
+    market: "housing"
+    store_fld: "SFDU_decline"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "(SFDU + SFDU_decline) > 0" # can only de-allocate from parcels that had anything
+    value_fn: "-1*SFDU_trend_const" # reverse scoring for declines
+    total: 1550
+  MFDU_growth:
+    name: "multi-family dwelling units (growth)"
+    market: "housing"
+    store_fld: "MFDU_growth"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "MFDU == 0" # allocate to parcels that didn't have anything in the base (but can keep allocating)
+    value_fn: "MFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
+    total: 550
+  MFDU_decline:
+    name: "multi-family dwelling units (decline)"
+    market: "housing"
+    store_fld: "MFDU_decline"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "(MFDU + MFDU_decline + MFDU_growth) > 0" # can only de-allocate from parcels that had anything
+    value_fn: "-1*MFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
+    total: 837
+  OTHR_growth:
+    name: "other dwelling units (growth)"
+    market: "housing"
+    store_fld: "OTHR_growth"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "(OTHR + OTHR_growth + OTHR_decline) == 0" # can only allocate to parcels that don't have anything
+    value_fn: "OTHR_trend_const" # term calibrated to match 2014-2019 trends at block group
+    total: 1175
+  OTHR_decline:
+    name: "other dwelling units (decline)"
+    market: "housing"
+    store_fld: "OTHR_decline"
+    # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
+    filter_fn: "(OTHR + OTHR_growth + OTHR_decline) > 0" # can only de-allocate from parcels that have something
+    value_fn: "-1*OTHR_trend_const" # term calibrated to match 2014-2019 trends at block group
+    total: 222
+  JOBS:
+    name: "employment"
+    market: "business"
+    store_fld: "JOBS_alloc"
+    filter_fn: "TOTH == 0"
+    value_fn: "JOBS_trend_const"
+    total: 4508
+# these lines are passed to DataFrame.eval() after allocation
+update_block: [
+  "SFDU_alloc = SFDU_decline + SFDU_growth",
+  "MFDU_alloc = MFDU_decline + MFDU_growth",
+  "OTHR_alloc = OTHR_decline + OTHR_growth",
+  "SFDU_final = SFDU + SFDU_alloc",
+  "MFDU_final = MFDU + MFDU_alloc",
+  "OTHR_final = OTHR + OTHR_alloc",
+  "JOBS_final = JOBS + JOBS_alloc"
+]
