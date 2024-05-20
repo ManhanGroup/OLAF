@@ -21,7 +21,5 @@ It is good practice to create a virtual environment before doing this, e.g.:
 
 `python3 -m venv env && source env/bin/activate`
 
-## Disclaimer and Copyright Statement
-This script should be considered Beta software.  It makes use of Pandas functions which perform arbitrary executions on a dataframe and therefore could possibly present a security vulnerability.  The author assumes no liability whatsoever for any damages incurred by users.
-
-Copyright (c) 2024 Colby M. Brown, Manhan Group LLC
+## Disclaimer
+This script should be considered Beta software, published under an MIT license.  It makes use of Pandas functions which perform arbitrary executions on a dataframe and therefore could possibly present a security vulnerability.  The author assumes no liability whatsoever for any damages incurred by users.
