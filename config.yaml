@@ -3,21 +3,23 @@ model_version: 0.1
 scenario_name: "test scenario"
 zonal_data: "zones.csv" 
 geo_id: "taz"
-
+draws: 30
 land_uses:
   DU:
     name: "dwelling units"
     market: "housing"
-    inventory: "total_residential_units"
-    store_fld: "final_residential_units"
+    store_fld: "alloc_residential_units"
     filter_fn: "dummy_res_value > 0" # passed to DataFrame.query()
     value_fn: "dummy_res_value" # passed to DataFrame.eval()
-    growth: 1000
+    total: 1000
   EMP:
     name: "jobs"
     market: "business"
-    inventory: "exist_total_emp"
-    store_fld: "final_total_emp"
+    store_fld: "alloc_total_emp"
     filter_fn: "dummy_biz_value > 0"
     value_fn: "dummy_biz_value"
-    growth: 1000
+    total: 1000
+update_block: [
+  "final_residential_units = total_residential_units + alloc_residential_units",
+  "final_total_emp = exist_total_emp + alloc_total_emp"
+]

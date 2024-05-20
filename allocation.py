@@ -25,10 +25,11 @@ class model:
         self.id = self.config['geo_id']
         self.zone_df.set_index(self.id,drop=False,inplace=True)
         self.land_uses = self.config['land_uses']
-    def sample_alts(self,n,LU):
-        # This method samples n development options for a land use, respecting filters
+        self.draws = self.config['draws']
+    def sample_alts(self,LU):
+        # This method samples development options for a land use, respecting filters
         sites_avail = self.zone_df.query(self.land_uses[LU]["filter_fn"]) 
-        site_sample = sites_avail.sample(n,replace=False,axis=0)
+        site_sample = sites_avail.sample(self.draws,replace=False,axis=0)
         return(site_sample)
     def allocate(self):
         start = time.time()
@@ -37,11 +38,10 @@ class model:
         dev_queue = [] # enumerate a "queue" of development projects to build
         for LU in self.land_uses:
             store_fld = self.land_uses[LU]["store_fld"]
-            inventory = self.land_uses[LU]["inventory"]
-            self.zone_df[store_fld] = self.zone_df[inventory] # initialize with the existing stock
+            self.zone_df[store_fld] = 0 # initialize field to which units will be allocated
             print("Enumerating " + self.land_uses[LU]['name'] + " to allocate")
-            growth = int(self.land_uses[LU]["growth"])
-            for draw in range(growth):
+            total = int(self.land_uses[LU]["total"])
+            for draw in range(total):
                 dev_queue.append(LU)
         rng.shuffle(dev_queue) # randomize the order so no specific LU gets priority
         position = 0
@@ -60,7 +60,7 @@ class model:
             _last_part = part
             store_fld = self.land_uses[LU]["store_fld"]
             value_fn = self.land_uses[LU]["value_fn"]
-            options = self.sample_alts(30,LU)
+            options = self.sample_alts(LU)
             utility = options.eval(value_fn,inplace=False).to_numpy()
             expUtil = np.exp(utility)
             denom = np.sum(expUtil)
@@ -69,11 +69,16 @@ class model:
             self.zone_df.at[zoneSel,store_fld] += 1
         run_min = round((time.time()-start)/60,1)
         print(f"Total run time = {run_min} minutes")
+    def update(self):
+        # this is a function for custom updates on the dataframe before/after allocation
+        for op in self.config['update_block']:
+            self.zone_df.eval(op, inplace=True)
 
 def main():
     test_model = model(sys.argv[1])
     test_model.allocate()
-    test_model.zone_df.to_csv(sys.argv[2])
+    test_model.update()
+    test_model.zone_df.to_csv(sys.argv[2], index=False)
 
 if __name__=="__main__":
     main()
