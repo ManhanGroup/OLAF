@@ -1,18 +1,28 @@
 model_name: "demonstration model"
 model_version: 0.1
 scenario_name: "test scenario"
-zonal_data: "Shasta_parcel_base_2010.csv" 
+zonal_data: "../data/parcels_2010forolaf.csv" 
 geo_id: "parcelid"
 draws: 30
+filter_Undevelopable: "devstatus!='Undevelopable'"
+vacancy_cap_aggregate_unit: "GEOID10"
+
 land_uses:
   SFDU_growth:
     name: "single-family dwelling units (growth)"
     market: "housing"
     store_fld: "SFDU_growth"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(SFDU_growth + SFDU + SFDU_decline) == 0" # can only allocate to parcels that don't have anything
+    filter_fn: "(SFDU_growth + SFDU + SFDU_decline) == 0" # can only allocate to parcels that don"t have anything
     value_fn: "SFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
     total: 2038
+    big_para_file: "../data/sf_development_model.csv"
+    capacity_fn: 1
+    target_vacancy_rate: 0.12
+    total_units: "SFDU"
+    occupied_units: "SFHH"
+    vacancy_cap_fld: "vacancy_cap_sfg"
+    flag: 1
   SFDU_decline:
     name: "single-family dwelling units (decline)"
     market: "housing"
@@ -21,45 +31,87 @@ land_uses:
     filter_fn: "(SFDU + SFDU_decline) > 0" # can only de-allocate from parcels that had anything
     value_fn: "-1*SFDU_trend_const" # reverse scoring for declines
     total: 1550
+    big_para_file: "../data/demolish_model.csv"
+    capacity_fn: 1
+    target_vacancy_rate: 0.12
+    total_units: "SFDU"
+    occupied_units: "SFHH"
+    vacancy_cap_fld: "vacancy_cap_sfd"
+    flag: -1
   MFDU_growth:
     name: "multi-family dwelling units (growth)"
     market: "housing"
     store_fld: "MFDU_growth"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "MFDU == 0" # allocate to parcels that didn't have anything in the base (but can keep allocating)
+    filter_fn: "(MFDU_growth+MF2_4DU+`MF5+DU`+MFDU_decline) == 0" # allocate to parcels that didn"t have anything in the base (but can keep allocating)
     value_fn: "MFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
     total: 550
+    big_para_file: "../data/mf_development_model.csv"
+    capacity_fn: "sqft_p*Cap_HS/43560"
+    target_vacancy_rate: 0.09
+    total_units: "MFDU"
+    occupied_units: "MFHH"
+    vacancy_cap_fld: "vacancy_cap_mfg"
+    flag: 1
   MFDU_decline:
     name: "multi-family dwelling units (decline)"
     market: "housing"
     store_fld: "MFDU_decline"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(MFDU + MFDU_decline + MFDU_growth) > 0" # can only de-allocate from parcels that had anything
+    filter_fn: "(MF2_4DU+`MF5+DU` + MFDU_decline + MFDU_growth) > 0" # can only de-allocate from parcels that had anything
     value_fn: "-1*MFDU_trend_const" # term calibrated to match 2014-2019 trends at block group
     total: 837
+    big_para_file: "../data/demolish_model.csv"
+    capacity_fn: "MF2_4DU+`MF5+DU`+ MFDU_decline + MFDU_growth"
+    target_vacancy_rate: 0.09
+    total_units: "MFDU"
+    occupied_units: "MFHH"
+    vacancy_cap_fld: "vacancy_cap_mfd"
+    flag: -1
   OTHR_growth:
     name: "other dwelling units (growth)"
     market: "housing"
     store_fld: "OTHR_growth"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(OTHR + OTHR_growth + OTHR_decline) == 0" # can only allocate to parcels that don't have anything
-    value_fn: "OTHR_trend_const" # term calibrated to match 2014-2019 trends at block group
+    filter_fn: "(MHDU + OTHR_growth + OTHR_decline) == 0" # can only allocate to parcels that don"t have anything
+    value_fn: "OTHR_trend_const" # term calibrated to match 2014-2019 trends at block groupn
     total: 1175
+    big_para_file: "../data/othr_development_model.csv"
+    capacity_fn: "sqft_p*Cap_HS/43560"
+    target_vacancy_rate: 0.09
+    total_units: "MHDU"
+    occupied_units: "MHHH"
+    vacancy_cap_fld: "vacancy_cap_mhg"
+    flag: 1
   OTHR_decline:
     name: "other dwelling units (decline)"
     market: "housing"
     store_fld: "OTHR_decline"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(OTHR + OTHR_growth + OTHR_decline) > 0" # can only de-allocate from parcels that have something
+    filter_fn: "(MHDU + OTHR_growth + OTHR_decline) > 0" # can only de-allocate from parcels that have something
     value_fn: "-1*OTHR_trend_const" # term calibrated to match 2014-2019 trends at block group
     total: 222
+    big_para_file: "../data/demolish_model.csv"
+    capacity_fn: MHDU + OTHR_growth + OTHR_decline
+    target_vacancy_rate: 0.09
+    total_units: "MHDU"
+    occupied_units: "MHHH"
+    vacancy_cap_fld: "vacancy_cap_mhd"
+    flag: -1
   JOBS:
     name: "employment"
     market: "business"
     store_fld: "JOBS_alloc"
-    filter_fn: "TOTH == 0"
+    filter_fn: "TOT_DU == 0"
     value_fn: "JOBS_trend_const"
     total: 4508
+    big_para_file: "../data/othr_development_model.csv"
+    capacity_fn: 1
+    target_vacancy_rate: 0.12
+    total_units: "TOT_DU"
+    occupied_units: "TOT_HH"
+    vacancy_cap_fld: "vacancy_cap"
+    flag: 1
 # these lines are passed to DataFrame.eval() after allocation
 update_block: [
   "SFDU_alloc = SFDU_decline + SFDU_growth",
@@ -67,6 +119,7 @@ update_block: [
   "OTHR_alloc = OTHR_decline + OTHR_growth",
   "SFDU_final = SFDU + SFDU_alloc",
   "MFDU_final = MFDU + MFDU_alloc",
-  "OTHR_final = OTHR + OTHR_alloc",
-  "JOBS_final = JOBS + JOBS_alloc"
+  "OTHR_final = MHDU + OTHR_alloc",
+  "JOBS_final = emptot_p + JOBS_alloc"
+  
 ]
