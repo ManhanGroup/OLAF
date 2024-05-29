@@ -100,7 +100,7 @@ class model:
             self.land_uses[LU]["total"]=self.land_uses[LU]["total"]-alloc
 
             remaining = int(self.land_uses[LU]["total"])
-            print("Remaining {} {}  to allocate".format(self.land_uses[LU]['total'] , self.land_uses[LU]['name']))
+            #print("Remaining {} {}  to allocate".format(self.land_uses[LU]['total'] , self.land_uses[LU]['name']))
             if self.land_uses[LU]["total"]==0:
                self.land_uses.pop(LU, None)            
             

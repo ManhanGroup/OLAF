@@ -79,9 +79,9 @@ land_uses:
 
 # these lines are passed to DataFrame.eval() after allocation
 update_block: [
-  "SFDU_alloc = SFDU_decline + SFDU_growth",
-  "MFDU_alloc = MFDU_decline + MFDU_growth",
-  "OTHR_alloc = OTHR_decline + OTHR_growth",
+  "SFDU_alloc = -SFDU_decline + SFDU_growth",
+  "MFDU_alloc = -MFDU_decline + MFDU_growth",
+  "OTHR_alloc = -OTHR_decline + OTHR_growth",
   "SFDU_final = SFDU + SFDU_alloc",
   "MFDU_final = MFDU + MFDU_alloc",
   "OTHR_final = MHDU + OTHR_alloc",
