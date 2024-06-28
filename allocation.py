@@ -62,10 +62,7 @@ class model:
 
         while len(self.land_uses)>0:
             LU = random.choice(list(self.land_uses.keys()))
-            store_fld = self.land_uses[LU]["store_fld"]
-            self.zone_df[store_fld] = 0 # initialize field to which units will be allocated
-            #print("Enumerating " + self.land_uses[LU]['name'] + " to allocate")
-            
+                      
             store_fld = self.land_uses[LU]["store_fld"]
             value_fn=self.land_uses[LU]["value_fn"]
             options = self.sample_alts(LU)
@@ -77,8 +74,9 @@ class model:
             if self.land_uses[LU]["capacity_fn"]==1:
                alloc = 1
             else: 
-               alloc=int(min(self.land_uses[LU]["total"],np.ceil(self.zone_df.iloc[[zoneSel]].eval(self.land_uses[LU]["capacity_fn"],inplace=False).squeeze())))
+               alloc=int(min(self.land_uses[LU]["total"],np.ceil(self.zone_df.loc[self.zone_df[id]==zoneSel].eval(self.land_uses[LU]["capacity_fn"],inplace=False).squeeze())))
             self.zone_df.at[zoneSel,store_fld] += alloc
+            #print(self.zone_df.loc[self.zone_df[store_fld]>0][store_fld].count())
             self.land_uses[LU]["total"]=self.land_uses[LU]["total"]-alloc
 
             remaining = int(self.land_uses[LU]["total"])
@@ -193,11 +191,9 @@ class model:
               self.zone_df.loc[:,'neighbors_per_'+k]=nei_parcel['neighbors_'+k]/nei_parcel['neighbors_emptot_p'].map(lambda x: x if x>0 else 1)
               
       
-    
+   
       
-
-
-      
+     
 
 def main():
     test_model = model(sys.argv[1])

@@ -24,7 +24,7 @@ land_uses:
     market: "housing"
     store_fld: "SFDU_decline"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(SFDU - SFDU_decline) > 0" # can only de-allocate from parcels that had anything
+    filter_fn: "(SFDU - SFDU_decline)>=1" # can only de-allocate from parcels that had anything
     value_fn: "Acreslt4000sqft*1.128593914573133+Acresquartertohalfacres*-0.3623752638522615+NatWalkInd*-2.594174906332187+dist2sewerpipe_n*-1.9883534007594568+hu_density*-6.068909615807969+inSGA*-0.4995458146806855+inWaterDistrictP*-1.5970491678615517+jph_balance*-10.791661852636352+mix_entropy*1.9794948558628445+neighbors_hudensity_n*-0.7708245442729591+neighbors_per_blt*-2.2388047042567667+neighbors_per_empret_p*1.044483090800613+neighbors_per_sf*0.4335330292886162+wrkperjob*-2.0850188560192318" # reverse scoring for declines
     total: 1550
     capacity_fn: 1
@@ -33,7 +33,7 @@ land_uses:
     market: "housing"
     store_fld: "MFDU_growth"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(MFDU_growth+MF2_4DU+`MF5+DU`-MFDU_decline) < abs(sqft_p*Cap_HS/43560)" # allocate to parcels that didn"t have anything in the base (but can keep allocating)
+    filter_fn: "(MFDU_growth+MF2_4DU+`MF5+DU`-MFDU_decline) < abs(sqft_p*Cap_HS/43560)" # allocate to parcels that didn"t reach capacity
     value_fn: "Acres10p*1.3366329794160798+Acres1to10*0.749804961518833+Acreshalfto1acres*0.1197346563925449+Acreslt4000sqft*-6.028750433709488+NatWalkInd*1.479543395831445+bg_average_age_n*0.7828703646336436+cnt_intersections_n*3.672944132601222+dist2sewerpipe_n*4.664972625817176+emp_entropy*-0.9079897740404508+hu_density*-0.5404043536904287+inPSGA*2.854993592499764+inSGA*-1.8602407547678703+job_tran45*-1.581800528939438+jph_balance*7.498633112382493+mix_entropy*-5.666699274110225+neighbors_hhvshu*-1.2950560012510153+neighbors_hudensity_n*0.2299176935889766+neighbors_jobdensity_n*1.247470235277357+neighbors_jobentropy*-0.0093815537437349+neighbors_per_blt*1.5490898853013215+neighbors_per_empret_p*4.0424080706810805+neighbors_per_sf*2.279870224462763+wrkperjob*-2.812606282752173" # term calibrated to match 2014-2019 trends at block group
     total: 550
     capacity_fn: "abs(sqft_p*Cap_HS/43560)-(MFDU_growth+MF2_4DU+`MF5+DU`-MFDU_decline)"
@@ -42,10 +42,10 @@ land_uses:
     market: "housing"
     store_fld: "MFDU_decline"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(MF2_4DU+`MF5+DU` - MFDU_decline + MFDU_growth) > 0" # can only de-allocate from parcels that had anything
+    filter_fn: "(MF2_4DU+`MF5+DU` - MFDU_decline) >=1" # can only de-allocate from parcels that had anything
     value_fn: "Acreslt4000sqft*1.128593914573133+Acresquartertohalfacres*-0.3623752638522615+NatWalkInd*-2.594174906332187+dist2sewerpipe_n*-1.9883534007594568+hu_density*-6.068909615807969+inSGA*-0.4995458146806855+inWaterDistrictP*-1.5970491678615517+jph_balance*-10.791661852636352+mix_entropy*1.9794948558628445+neighbors_hudensity_n*-0.7708245442729591+neighbors_per_blt*-2.2388047042567667+neighbors_per_empret_p*1.044483090800613+neighbors_per_sf*0.4335330292886162+wrkperjob*-2.0850188560192318" # term calibrated to match 2014-2019 trends at block group
     total: 837
-    capacity_fn: "MF2_4DU+`MF5+DU`- MFDU_decline + MFDU_growth"
+    capacity_fn: "MF2_4DU+`MF5+DU`- MFDU_decline"
   OTHR_growth:
     name: "other dwelling units (growth)"
     market: "housing"
@@ -54,16 +54,16 @@ land_uses:
     filter_fn: "(MHDU + OTHR_growth - OTHR_decline) == 0" # can only allocate to parcels that don"t have anything
     value_fn: "Acres10p*1.3366329794160798+Acres1to10*0.749804961518833+Acreshalfto1acres*0.1197346563925449+Acreslt4000sqft*-6.028750433709488+NatWalkInd*1.479543395831445+bg_average_age_n*0.7828703646336436+cnt_intersections_n*3.672944132601222+dist2sewerpipe_n*4.664972625817176+emp_entropy*-0.9079897740404508+hu_density*-0.5404043536904287+inPSGA*2.854993592499764+inSGA*-1.8602407547678703+job_tran45*-1.581800528939438+jph_balance*7.498633112382493+mix_entropy*-5.666699274110225+neighbors_hhvshu*-1.2950560012510153+neighbors_hudensity_n*0.2299176935889766+neighbors_jobdensity_n*1.247470235277357+neighbors_jobentropy*-0.0093815537437349+neighbors_per_blt*1.5490898853013215+neighbors_per_empret_p*4.0424080706810805+neighbors_per_sf*2.279870224462763+wrkperjob*-2.812606282752173" # term calibrated to match 2014-2019 trends at block groupn
     total: 1175
-    capacity_fn: "abs(sqft_p*Cap_HS/43560)"
+    capacity_fn: "abs(sqft_p*Cap_HS/43560)-(MHDU + OTHR_growth - OTHR_decline)"
   OTHR_decline:
     name: "other dwelling units (decline)"
     market: "housing"
     store_fld: "OTHR_decline"
     # filter is passed to DataFrame.query(); value is passed to DataFrame.eval()
-    filter_fn: "(MHDU + OTHR_growth - OTHR_decline) > 0" # can only de-allocate from parcels that have something
+    filter_fn: "(MHDU  - OTHR_decline) >=1" # can only de-allocate from parcels that have something
     value_fn: "Acreslt4000sqft*1.128593914573133+Acresquartertohalfacres*-0.3623752638522615+NatWalkInd*-2.594174906332187+dist2sewerpipe_n*-1.9883534007594568+hu_density*-6.068909615807969+inSGA*-0.4995458146806855+inWaterDistrictP*-1.5970491678615517+jph_balance*-10.791661852636352+mix_entropy*1.9794948558628445+neighbors_hudensity_n*-0.7708245442729591+neighbors_per_blt*-2.2388047042567667+neighbors_per_empret_p*1.044483090800613+neighbors_per_sf*0.4335330292886162+wrkperjob*-2.0850188560192318" # term calibrated to match 2014-2019 trends at block group
     total: 222
-    capacity_fn: MHDU + OTHR_growth - OTHR_decline
+    capacity_fn: MHDU - OTHR_decline
   JOBS:
     name: "employment"
     market: "business"
