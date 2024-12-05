@@ -63,6 +63,11 @@ class model:
             options = self.sample_alts(LU)
             utility = options.eval(value_fn,inplace=False).to_numpy()
             expUtil = np.exp(utility)
+            mask = np.isfinite(expUtil)
+            expUtil = expUtil[mask]
+            options = options[mask]
+            if options.shape[0]==0:
+                continue
             denom = np.sum(expUtil)
             probs = expUtil/denom
             zoneSel = rng.choice(options[id].to_numpy(),p=probs)
