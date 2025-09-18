@@ -1,6 +1,6 @@
 # OLAF: an Open Land-use Allocation Framework
 
-![](https://upload.wikimedia.org/wikipedia/en/6/6d/Olaf_from_Disney%27s_Frozen.png?20151210060105)
+![](Firefly_olaf_logo.jpg)
 
 This is an ultra-minimalist Python 3 script designed to serve as a code pattern for building simple and flexible microsimulation-based land use allocation models.  Such models are generally used to predict the spatial distribution of forecasted control totals of various quantities of development activity (such as housing units or square feet of commercial real estate).  Urban planners and transportation engineers use the predictions to run travel forecasting models that estimate traffic on roads and ridership on transit lines; those numbers are used to help prioritize which proposed transportation projects are built and/or to measure the performance of alternative networks with respect to key indicators such as emissions.
 
